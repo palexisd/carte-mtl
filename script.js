@@ -14,7 +14,9 @@ let allRecords = [];
 let markerClusterGroup;
 let currentFilters = {
     arrondissement: 'all',
-    type_evenement: 'all'
+    type_evenement: 'all',
+    emplacement: 'all',
+    cout: 'all'
 };
 
 // --- Custom code for trackpad gestures (pan & zoom) ---
@@ -82,7 +84,9 @@ function applyFiltersAndRedraw() {
     const filteredRecords = allRecords.filter(record => {
         const boroughMatch = currentFilters.arrondissement === 'all' || record.arrondissement === currentFilters.arrondissement;
         const typeMatch = currentFilters.type_evenement === 'all' || record.type_evenement === currentFilters.type_evenement;
-        return boroughMatch && typeMatch;
+        const emplacementMatch = currentFilters.emplacement === 'all' || record.emplacement === currentFilters.emplacement;
+        const coutMatch = currentFilters.cout === 'all' || record.cout === currentFilters.cout;
+        return boroughMatch && typeMatch && emplacementMatch && coutMatch;
     });
     
     const initialIcon = createMarkerIcon(map.getZoom());
@@ -134,6 +138,7 @@ function applyFiltersAndRedraw() {
     map.addLayer(markerClusterGroup);
 }
 
+
 /**
  * Creates and populates the filter controls in the UI.
  */
@@ -142,6 +147,8 @@ function createFilterControls() {
 
     const boroughs = [...new Set(allRecords.map(r => r.arrondissement).filter(Boolean))].sort();
     const eventTypes = [...new Set(allRecords.map(r => r.type_evenement).filter(Boolean))].sort();
+    const emplacements = [...new Set(allRecords.map(r => r.emplacement).filter(Boolean))].sort();
+    const costs = [...new Set(allRecords.map(r => r.cout).filter(Boolean))].sort();
 
     let boroughHtml = `
         <div class="filter-control">
@@ -160,13 +167,33 @@ function createFilterControls() {
                 ${eventTypes.map(t => `<option value="${t}">${t}</option>`).join('')}
             </select>
         </div>`;
+        
+    let emplacementHtml = `
+        <div class="filter-control">
+            <label for="emplacement-filter">Lieu</label>
+            <select id="emplacement-filter">
+                <option value="all">Tous les lieux</option>
+                ${emplacements.map(e => `<option value="${e}">${e}</option>`).join('')}
+            </select>
+        </div>`;
+
+    let costHtml = `
+        <div class="filter-control">
+            <label for="cost-filter">Coût</label>
+            <select id="cost-filter">
+                <option value="all">Tous les coûts</option>
+                ${costs.map(c => `<option value="${c}">${c}</option>`).join('')}
+            </select>
+        </div>`;
 
     let resetButtonHtml = `<button id="reset-filters">Réinitialiser les filtres</button>`;
 
-    container.innerHTML = boroughHtml + eventTypeHtml + resetButtonHtml;
+    container.innerHTML = boroughHtml + eventTypeHtml + emplacementHtml + costHtml + resetButtonHtml;
 
     const boroughSelect = document.getElementById('borough-filter');
     const typeSelect = document.getElementById('type-filter');
+    const emplacementSelect = document.getElementById('emplacement-filter');
+    const costSelect = document.getElementById('cost-filter');
     const resetButton = document.getElementById('reset-filters');
 
     boroughSelect.addEventListener('change', (e) => {
@@ -179,11 +206,25 @@ function createFilterControls() {
         applyFiltersAndRedraw();
     });
 
+    emplacementSelect.addEventListener('change', (e) => {
+        currentFilters.emplacement = e.target.value;
+        applyFiltersAndRedraw();
+    });
+
+    costSelect.addEventListener('change', (e) => {
+        currentFilters.cout = e.target.value;
+        applyFiltersAndRedraw();
+    });
+
     resetButton.addEventListener('click', () => {
         boroughSelect.value = 'all';
         typeSelect.value = 'all';
+        emplacementSelect.value = 'all';
+        costSelect.value = 'all';
         currentFilters.arrondissement = 'all';
         currentFilters.type_evenement = 'all';
+        currentFilters.emplacement = 'all';
+        currentFilters.cout = 'all';
         applyFiltersAndRedraw();
     });
 }
@@ -227,7 +268,7 @@ async function fetchAndInitialize() {
         console.log(`Successfully fetched all ${allRecords.length} records.`);
         
         createFilterControls();
-        createToggleControl(); // Create the new toggle button
+        createToggleControl();
         applyFiltersAndRedraw();
 
         map.on('zoomend', updateAllMarkerIcons);
