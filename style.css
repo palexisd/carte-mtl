@@ -8,7 +8,71 @@ body {
     width: 100%;
 }
 
-/* --- Custom Marker Style (Corrected) --- */
+/* --- Filter Controls --- */
+#filter-container {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.filter-control {
+    display: flex;
+    flex-direction: column;
+}
+
+.filter-control label {
+    font-size: 12px;
+    color: #333;
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.filter-control select {
+    -webkit-appearance: none;
+    appearance: none;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 8px 30px 8px 12px;
+    font-size: 14px;
+    cursor: pointer;
+    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007AFF%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.4-5.4-12.8z%22%2F%3E%3C%2Fsvg%3E');
+    background-repeat: no-repeat;
+    background-position: right 8px top 50%;
+    background-size: .65em auto;
+    width: 200px;
+}
+
+#reset-filters {
+    padding: 8px 12px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #007aff;
+    background-color: transparent;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.2s ease;
+}
+
+#reset-filters:hover {
+    background-color: rgba(0, 122, 255, 0.1);
+}
+
+
+/* --- Custom Marker Style --- */
 .custom-marker-icon .marker-pin {
     width: 30px;
     height: 30px;
@@ -20,10 +84,9 @@ body {
     top: 50%;
     margin: -15px 0 0 -15px;
     border: 1px solid #0056b3; /* Darker blue border for contrast */
-    box-shadow: 3px 3px 5px rgba(0,0,0,0.3); /* Drop shadow for depth */
+    box-shadow: 3px 3px 5px rgba(0,0,0,0.3);
     transition: transform 0.2s ease-out;
 }
-/* The inner white dot is removed for a cleaner look */
 .custom-marker-icon .marker-pin::after {
     content: none;
 }
@@ -41,17 +104,9 @@ body {
     border: 3px solid rgba(255, 255, 255, 0.5);
     box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.3);
 }
-
-.custom-cluster.small {
-    background-color: rgba(29, 185, 84, 0.9); /* Green */
-}
-.custom-cluster.medium {
-    background-color: rgba(240, 180, 0, 0.9); /* Yellow */
-}
-.custom-cluster.large {
-    background-color: rgba(255, 70, 70, 0.9); /* Red */
-}
-
+.custom-cluster.small { background-color: rgba(29, 185, 84, 0.9); }
+.custom-cluster.medium { background-color: rgba(240, 180, 0, 0.9); }
+.custom-cluster.large { background-color: rgba(255, 70, 70, 0.9); }
 
 /* --- Custom Popup Style --- */
 .leaflet-popup-content-wrapper {
@@ -81,26 +136,6 @@ body {
     background-color: #e5e5e5;
     margin: 10px 0;
 }
-
-/* --- Zoom-dependent Marker Sizing --- */
-/* This section is intentionally left blank as the JS-based sizing is more reliable */
-.leaflet-zoom-9 .custom-marker-icon .marker-pin,
-.leaflet-zoom-8 .custom-marker-icon .marker-pin {
-    transform: rotate(-45deg) scale(0.3);
-}
-.leaflet-zoom-10 .custom-marker-icon .marker-pin {
-    transform: rotate(-45deg) scale(0.4);
-}
-.leaflet-zoom-11 .custom-marker-icon .marker-pin {
-    transform: rotate(-45deg) scale(0.5);
-}
-.leaflet-zoom-12 .custom-marker-icon .marker-pin {
-    transform: rotate(-45deg) scale(0.7);
-}
-.leaflet-zoom-13 .custom-marker-icon .marker-pin {
-    transform: rotate(-45deg) scale(0.9);
-}
-
 
 /* --- Hide the "spiderfy" lines --- */
 .marker-cluster-spider-leg {
