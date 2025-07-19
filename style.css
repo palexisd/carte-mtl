@@ -8,10 +8,41 @@ body {
     width: 100%;
 }
 
+/* --- Filter Toggle Button --- */
+#filter-toggle {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 1001; /* Above the filter container */
+    width: 44px;
+    height: 44px;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.2s ease;
+}
+
+#filter-toggle:hover {
+    transform: scale(1.1);
+}
+
+#filter-toggle svg {
+    width: 20px;
+    height: 20px;
+    fill: #333;
+}
+
 /* --- Filter Controls --- */
 #filter-container {
     position: absolute;
-    top: 20px;
+    top: 80px; /* Positioned below the toggle button */
     right: 20px;
     z-index: 1000;
     background: rgba(255, 255, 255, 0.7);
@@ -24,7 +55,16 @@ body {
     display: flex;
     flex-direction: column;
     gap: 15px;
+    transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
+    transform-origin: top right;
 }
+
+#filter-container.hidden {
+    opacity: 0;
+    visibility: hidden;
+    transform: scale(0.95) translateY(-10px);
+}
+
 
 .filter-control {
     display: flex;
