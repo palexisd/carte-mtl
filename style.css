@@ -8,28 +8,24 @@ body {
     width: 100%;
 }
 
-/* --- Custom Marker Style --- */
+/* --- Custom Marker Style (Corrected) --- */
 .custom-marker-icon .marker-pin {
     width: 30px;
     height: 30px;
     border-radius: 50% 50% 50% 0;
     background: #007aff; /* Apple Blue */
     position: absolute;
-    transform: rotate(-45deg); /* Base rotation */
+    transform: rotate(-45deg);
     left: 50%;
     top: 50%;
     margin: -15px 0 0 -15px;
-    border: 1px solid #fff;
-    transition: transform 0.2s ease-out; /* Add transition for smooth scaling */
+    border: 1px solid #0056b3; /* Darker blue border for contrast */
+    box-shadow: 3px 3px 5px rgba(0,0,0,0.3); /* Drop shadow for depth */
+    transition: transform 0.2s ease-out;
 }
+/* The inner white dot is removed for a cleaner look */
 .custom-marker-icon .marker-pin::after {
-    content: '';
-    width: 14px;
-    height: 14px;
-    margin: 8px 0 0 8px;
-    background: #ffffff;
-    position: absolute;
-    border-radius: 50%;
+    content: none;
 }
 
 /* --- Custom Cluster Style --- */
@@ -86,29 +82,27 @@ body {
     margin: 10px 0;
 }
 
-/* --- Zoom-dependent Marker Sizing (Corrected) --- */
-
-/* Make markers very small at the lowest zoom levels */
+/* --- Zoom-dependent Marker Sizing --- */
+/* This section is intentionally left blank as the JS-based sizing is more reliable */
 .leaflet-zoom-9 .custom-marker-icon .marker-pin,
 .leaflet-zoom-8 .custom-marker-icon .marker-pin {
     transform: rotate(-45deg) scale(0.3);
 }
-
-/* Gradually increase the size at each zoom level */
 .leaflet-zoom-10 .custom-marker-icon .marker-pin {
     transform: rotate(-45deg) scale(0.4);
 }
-
 .leaflet-zoom-11 .custom-marker-icon .marker-pin {
     transform: rotate(-45deg) scale(0.5);
 }
-
 .leaflet-zoom-12 .custom-marker-icon .marker-pin {
     transform: rotate(-45deg) scale(0.7);
 }
-
 .leaflet-zoom-13 .custom-marker-icon .marker-pin {
     transform: rotate(-45deg) scale(0.9);
 }
 
-/* At zoom level 14 and higher, the markers return to their default transform (rotate only) */
+
+/* --- Hide the "spiderfy" lines --- */
+.marker-cluster-spider-leg {
+    display: none !important;
+}
