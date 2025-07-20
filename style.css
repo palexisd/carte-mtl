@@ -1,7 +1,7 @@
 body {
     margin: 0;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-    overflow: hidden; /* Prevent scrolling on mobile */
+    overflow: hidden;
 }
 
 #map {
@@ -27,17 +27,15 @@ body {
     font-weight: 500;
     color: #555;
 }
-
 .map-message.hidden {
     display: none;
 }
 
 
 /* --- Map Control Buttons --- */
-#filter-toggle, #reset-button-map {
+.map-control-button {
     position: absolute;
-    top: 20px;
-    z-index: 1001; /* Above the filter container */
+    z-index: 1001;
     width: 44px;
     height: 44px;
     background: rgba(255, 255, 255, 0.7);
@@ -52,18 +50,13 @@ body {
     align-items: center;
     transition: all 0.3s ease;
 }
-
-#filter-toggle {
-    right: 20px;
-}
-
-#reset-button-map {
-    right: 74px; /* Positioned next to the toggle button */
-}
-
-#filter-toggle:hover, #reset-button-map:hover {
+.map-control-button:hover {
     transform: scale(1.1);
 }
+
+#filter-toggle { top: 20px; right: 20px; }
+#reset-button-map { top: 20px; right: 74px; }
+#geolocation-button { bottom: 20px; left: 20px; }
 
 #reset-button-map.hidden {
     opacity: 0;
@@ -72,14 +65,13 @@ body {
 }
 
 #filter-toggle.active {
-    background-color: rgba(0, 122, 255, 0.2); /* Light blue to indicate active filters */
+    background-color: rgba(0, 122, 255, 0.2);
 }
-
 #filter-toggle.active svg {
     fill: #007aff;
 }
 
-#filter-toggle svg, #reset-button-map svg {
+.map-control-button svg {
     width: 20px;
     height: 20px;
     fill: #333;
@@ -90,7 +82,7 @@ body {
 /* --- Filter Controls --- */
 #filter-container {
     position: absolute;
-    top: 80px; /* Positioned below the toggle button */
+    top: 80px;
     right: 20px;
     z-index: 1000;
     background: rgba(255, 255, 255, 0.7);
@@ -184,18 +176,17 @@ body {
     }
 
     #filter-container.hidden {
-        /* Adjust hidden animation for mobile */
         transform: translateY(20px);
     }
 
     .filter-control select,
     .filter-control input {
-        width: calc(100% - 24px); /* Full width minus padding */
+        width: calc(100% - 24px);
     }
 }
 
 
-/* --- Custom Marker, Cluster, and Popup Styles (Unchanged) --- */
+/* --- Marker & Popup Styles --- */
 .custom-marker-icon .marker-pin {
     width: 30px;
     height: 30px;
@@ -210,6 +201,17 @@ body {
     box-shadow: 3px 3px 5px rgba(0,0,0,0.3);
     transition: transform 0.2s ease-out;
 }
+
+/* --- Highlighted Marker Animation --- */
+.marker-highlight .marker-pin {
+    animation: bounce 1s infinite;
+}
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% { transform: rotate(-45deg) translateY(0); }
+    40% { transform: rotate(-45deg) translateY(-15px); }
+    60% { transform: rotate(-45deg) translateY(-7px); }
+}
+
 .custom-marker-icon .marker-pin::after {
     content: none;
 }
