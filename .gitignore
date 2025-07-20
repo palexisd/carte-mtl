@@ -2,4 +2,6 @@
 
 TEST/
 BKP/
+
+# macOS
 .DS_Store
