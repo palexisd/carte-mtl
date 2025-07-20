@@ -10,7 +10,8 @@ let markerClusterGroup;
 export function initializeMap() {
     map = L.map('map', {
         scrollWheelZoom: false,
-        attributionControl: false
+        attributionControl: false,
+        zoomControl: false // This line removes the default zoom buttons
     }).setView([45.5019, -73.5674], 11);
 
     L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {

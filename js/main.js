@@ -1,6 +1,6 @@
 import { fetchAllRecords } from './api.js';
 import { initializeMap, drawMarkers, updateAllMarkerIcons } from './map.js';
-import { ui, createFilterControls, createToggleControl, updateFilterIndicator, setFilterControlsFromState } from './ui.js';
+import { ui, createFilterControls, createMapControls, updateFilterIndicator, setFilterControlsFromState } from './ui.js';
 
 // --- Global State ---
 let allRecords = [];
@@ -27,13 +27,30 @@ function applyFiltersAndRedraw() {
 }
 
 /**
+ * Resets all filters to their default state and redraws the map.
+ */
+function resetAllFilters() {
+    Object.keys(currentFilters).forEach(key => currentFilters[key] = key === 'search' ? '' : 'all');
+    setFilterControlsFromState(currentFilters);
+    applyFiltersAndRedraw();
+}
+
+/**
  * Applies all active filters to the main record list.
  * @returns {Array} The array of filtered records.
  */
 function filterRecords() {
     const searchTerm = currentFilters.search.toLowerCase();
-    
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()); // Set to midnight to compare dates correctly
+
     return allRecords.filter(record => {
+        // Hide events that have already passed
+        const recordEndDate = new Date(record.date_fin);
+        if (recordEndDate < today) {
+            return false;
+        }
+
         const boroughMatch = currentFilters.arrondissement === 'all' || record.arrondissement === currentFilters.arrondissement;
         const typeMatch = currentFilters.type_evenement === 'all' || record.type_evenement === currentFilters.type_evenement;
         const emplacementMatch = currentFilters.emplacement === 'all' || record.emplacement === currentFilters.emplacement;
@@ -120,9 +137,9 @@ async function main() {
         console.log(`Successfully fetched all ${allRecords.length} records.`);
         
         readFiltersFromURL();
-        createFilterControls(allRecords, currentFilters, applyFiltersAndRedraw);
+        createFilterControls(allRecords, currentFilters, applyFiltersAndRedraw, resetAllFilters);
         setFilterControlsFromState(currentFilters);
-        createToggleControl();
+        createMapControls(resetAllFilters);
         applyFiltersAndRedraw();
 
     } catch (error) {

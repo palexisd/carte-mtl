@@ -33,11 +33,10 @@ body {
 }
 
 
-/* --- Filter Toggle Button --- */
-#filter-toggle {
+/* --- Map Control Buttons --- */
+#filter-toggle, #reset-button-map {
     position: absolute;
     top: 20px;
-    right: 20px;
     z-index: 1001; /* Above the filter container */
     width: 44px;
     height: 44px;
@@ -51,11 +50,25 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: transform 0.2s ease, background-color 0.3s ease;
+    transition: all 0.3s ease;
 }
 
-#filter-toggle:hover {
+#filter-toggle {
+    right: 20px;
+}
+
+#reset-button-map {
+    right: 74px; /* Positioned next to the toggle button */
+}
+
+#filter-toggle:hover, #reset-button-map:hover {
     transform: scale(1.1);
+}
+
+#reset-button-map.hidden {
+    opacity: 0;
+    visibility: hidden;
+    transform: scale(0.5);
 }
 
 #filter-toggle.active {
@@ -66,12 +79,13 @@ body {
     fill: #007aff;
 }
 
-#filter-toggle svg {
+#filter-toggle svg, #reset-button-map svg {
     width: 20px;
     height: 20px;
     fill: #333;
     transition: fill 0.3s ease;
 }
+
 
 /* --- Filter Controls --- */
 #filter-container {
@@ -164,7 +178,7 @@ body {
         overflow-y: auto;
     }
     
-    #filter-toggle {
+    #filter-toggle, #reset-button-map {
         top: auto;
         bottom: 20px;
     }

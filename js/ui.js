@@ -5,7 +5,8 @@ export const ui = {
     noResultsMessage: document.getElementById('no-results-message'),
     apiErrorMessage: document.getElementById('api-error-message'),
     filterContainer: document.getElementById('filter-container'),
-    toggleButton: null
+    toggleButton: null,
+    resetButton: null
 };
 
 /**
@@ -13,10 +14,10 @@ export const ui = {
  * @param {Array} allRecords - The complete list of records to build filter options from.
  * @param {object} currentFilters - The current state of filters.
  * @param {function} onFilterChange - The callback function to execute when a filter changes.
+ * @param {function} onReset - The callback function to execute when filters are reset.
  */
-export function createFilterControls(allRecords, currentFilters, onFilterChange) {
+export function createFilterControls(allRecords, currentFilters, onFilterChange, onReset) {
     const boroughs = [...new Set(allRecords.map(r => r.arrondissement).filter(Boolean))].sort();
-    // MODIFIED LINE: Added a filter to remove the string 'nan'
     const eventTypes = [...new Set(allRecords.map(r => r.type_evenement).filter(Boolean).filter(type => type !== 'nan'))].sort();
     const emplacements = [...new Set(allRecords.map(r => r.emplacement).filter(Boolean))].sort();
     const costs = [...new Set(allRecords.map(r => r.cout).filter(Boolean))].sort();
@@ -66,45 +67,32 @@ export function createFilterControls(allRecords, currentFilters, onFilterChange)
         <button id="reset-filters">Réinitialiser les filtres</button>
     `;
 
-    // Debounce the filter change handler specifically for the search input
     const debouncedOnFilterChange = debounce(onFilterChange, 300);
 
     document.getElementById('search-filter').addEventListener('input', e => {
         currentFilters.search = e.target.value;
-        debouncedOnFilterChange(); // Use the debounced function here
+        debouncedOnFilterChange();
     });
 
-    // Other filters can trigger the change instantly
-    document.getElementById('date-filter').addEventListener('change', e => {
-        currentFilters.date = e.target.value;
-        onFilterChange();
+    // Event listeners for dropdowns
+    const selects = ui.filterContainer.querySelectorAll('select');
+    selects.forEach(select => {
+        select.addEventListener('change', e => {
+            const filterKey = e.target.id.replace('-filter', '');
+            if(filterKey === 'borough') {
+                currentFilters.arrondissement = e.target.value;
+            } else if (filterKey === 'type') {
+                currentFilters.type_evenement = e.target.value;
+            } else if (filterKey === 'cost') {
+                currentFilters.cout = e.target.value;
+            } else {
+                currentFilters[filterKey] = e.target.value;
+            }
+            onFilterChange();
+        });
     });
 
-    document.getElementById('borough-filter').addEventListener('change', e => {
-        currentFilters.arrondissement = e.target.value;
-        onFilterChange();
-    });
-
-    document.getElementById('type-filter').addEventListener('change', e => {
-        currentFilters.type_evenement = e.target.value;
-        onFilterChange();
-    });
-
-    document.getElementById('emplacement-filter').addEventListener('change', e => {
-        currentFilters.emplacement = e.target.value;
-        onFilterChange();
-    });
-
-    document.getElementById('cost-filter').addEventListener('change', e => {
-        currentFilters.cout = e.target.value;
-        onFilterChange();
-    });
-
-    document.getElementById('reset-filters').addEventListener('click', () => {
-        Object.keys(currentFilters).forEach(key => currentFilters[key] = key === 'search' ? '' : 'all');
-        setFilterControlsFromState(currentFilters);
-        onFilterChange();
-    });
+    document.getElementById('reset-filters').addEventListener('click', onReset);
 }
 
 /**
@@ -121,21 +109,36 @@ export function setFilterControlsFromState(currentFilters) {
 }
 
 /**
- * Creates the toggle button for the filter menu.
+ * Creates the main map control buttons (toggle and reset).
+ * @param {function} onReset - The callback function to execute when the reset button is clicked.
  */
-export function createToggleControl() {
+export function createMapControls(onReset) {
+    // Create Toggle Button
     ui.toggleButton = document.createElement('button');
     ui.toggleButton.id = 'filter-toggle';
+    ui.toggleButton.title = 'Afficher/masquer les filtres';
     ui.toggleButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M3.9 54.9C10.5 40.9 24.5 32 40 32H472c15.5 0 29.5 8.9 36.1 22.9s4.6 30.5-5.2 42.5L320 320.9V448c0 12.1-6.8 23.2-17.7 28.6s-23.8 4.3-33.5-3l-64-48c-8.1-6-12.8-15.5-12.8-25.6V320.9L9 97.3C-.7 85.4-2.8 68.8 3.9 54.9z"/></svg>`;
     document.body.appendChild(ui.toggleButton);
 
     ui.toggleButton.addEventListener('click', () => {
         ui.filterContainer.classList.toggle('hidden');
     });
+    
+    // Create External Reset Button
+    ui.resetButton = document.createElement('button');
+    ui.resetButton.id = 'reset-button-map';
+    ui.resetButton.title = 'Réinitialiser les filtres';
+    ui.resetButton.classList.add('hidden'); // Hidden by default
+    ui.resetButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
+    <path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/>
+</svg>`;
+    document.body.appendChild(ui.resetButton);
+    
+    ui.resetButton.addEventListener('click', onReset);
 }
 
 /**
- * Updates the filter toggle button's style if any filters are active.
+ * Updates the visibility and style of map controls based on filter state.
  * @param {object} currentFilters The current state of filters.
  */
 export function updateFilterIndicator(currentFilters) {
@@ -143,4 +146,5 @@ export function updateFilterIndicator(currentFilters) {
         (key === 'search' && currentFilters[key] !== '') || (key !== 'search' && currentFilters[key] !== 'all')
     );
     ui.toggleButton.classList.toggle('active', isAnyFilterActive);
+    ui.resetButton.classList.toggle('hidden', !isAnyFilterActive);
 }
