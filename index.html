@@ -14,12 +14,21 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="filter-container" class="hidden"></div>
-    <div id="map"></div>
+    <div id="filter-container" class="hidden">
+        </div>
+
+    <div id="map">
+        <div id="no-results-message" class="map-message hidden">
+            <p>Aucun événement ne correspond à vos critères.</p>
+        </div>
+        <div id="api-error-message" class="map-message hidden">
+            <p>Impossible de charger les données pour le moment. Veuillez réessayer plus tard.</p>
+        </div>
+    </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
     
-    <script src="script.js"></script>
+    <script type="module" src="js/main.js"></script>
 </body>
 </html>

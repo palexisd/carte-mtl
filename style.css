@@ -1,12 +1,37 @@
 body {
     margin: 0;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    overflow: hidden; /* Prevent scrolling on mobile */
 }
 
 #map {
     height: 100vh;
     width: 100%;
+    position: relative;
 }
+
+/* --- Map Messages (No Results / Error) --- */
+.map-message {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 999;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 20px 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    text-align: center;
+    font-weight: 500;
+    color: #555;
+}
+
+.map-message.hidden {
+    display: none;
+}
+
 
 /* --- Filter Toggle Button --- */
 #filter-toggle {
@@ -26,17 +51,26 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: transform 0.2s ease;
+    transition: transform 0.2s ease, background-color 0.3s ease;
 }
 
 #filter-toggle:hover {
     transform: scale(1.1);
 }
 
+#filter-toggle.active {
+    background-color: rgba(0, 122, 255, 0.2); /* Light blue to indicate active filters */
+}
+
+#filter-toggle.active svg {
+    fill: #007aff;
+}
+
 #filter-toggle svg {
     width: 20px;
     height: 20px;
     fill: #333;
+    transition: fill 0.3s ease;
 }
 
 /* --- Filter Controls --- */
@@ -65,7 +99,6 @@ body {
     transform: scale(0.95) translateY(-10px);
 }
 
-
 .filter-control {
     display: flex;
     flex-direction: column;
@@ -78,20 +111,29 @@ body {
     font-weight: 600;
 }
 
-.filter-control select {
+.filter-control select,
+.filter-control input {
     -webkit-appearance: none;
     appearance: none;
     background-color: #fff;
     border: 1px solid #ddd;
     border-radius: 6px;
-    padding: 8px 30px 8px 12px;
+    padding: 8px 12px;
     font-size: 14px;
+    width: 200px;
+}
+
+.filter-control select {
+    padding-right: 30px;
     cursor: pointer;
     background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007AFF%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.4-5.4-12.8z%22%2F%3E%3C%2Fsvg%3E');
     background-repeat: no-repeat;
     background-position: right 8px top 50%;
     background-size: .65em auto;
-    width: 200px;
+}
+
+.filter-control input {
+    width: 176px; /* Adjust for padding */
 }
 
 #reset-filters {
@@ -111,27 +153,52 @@ body {
     background-color: rgba(0, 122, 255, 0.1);
 }
 
+/* --- Mobile Responsiveness --- */
+@media (max-width: 600px) {
+    #filter-container {
+        width: calc(100% - 40px);
+        top: 20px;
+        right: 20px;
+        left: 20px;
+        max-height: calc(100% - 100px);
+        overflow-y: auto;
+    }
+    
+    #filter-toggle {
+        top: auto;
+        bottom: 20px;
+    }
 
-/* --- Custom Marker Style --- */
+    #filter-container.hidden {
+        /* Adjust hidden animation for mobile */
+        transform: translateY(20px);
+    }
+
+    .filter-control select,
+    .filter-control input {
+        width: calc(100% - 24px); /* Full width minus padding */
+    }
+}
+
+
+/* --- Custom Marker, Cluster, and Popup Styles (Unchanged) --- */
 .custom-marker-icon .marker-pin {
     width: 30px;
     height: 30px;
     border-radius: 50% 50% 50% 0;
-    background: #007aff; /* Apple Blue */
+    background: #007aff;
     position: absolute;
     transform: rotate(-45deg);
     left: 50%;
     top: 50%;
     margin: -15px 0 0 -15px;
-    border: 1px solid #0056b3; /* Darker blue border for contrast */
+    border: 1px solid #0056b3;
     box-shadow: 3px 3px 5px rgba(0,0,0,0.3);
     transition: transform 0.2s ease-out;
 }
 .custom-marker-icon .marker-pin::after {
     content: none;
 }
-
-/* --- Custom Cluster Style --- */
 .custom-cluster {
     background-clip: padding-box;
     border-radius: 50%;
@@ -147,8 +214,6 @@ body {
 .custom-cluster.small { background-color: rgba(29, 185, 84, 0.9); }
 .custom-cluster.medium { background-color: rgba(240, 180, 0, 0.9); }
 .custom-cluster.large { background-color: rgba(255, 70, 70, 0.9); }
-
-/* --- Custom Popup Style --- */
 .leaflet-popup-content-wrapper {
     background: #ffffff;
     border-radius: 8px;
@@ -176,8 +241,6 @@ body {
     background-color: #e5e5e5;
     margin: 10px 0;
 }
-
-/* --- Hide the "spiderfy" lines --- */
 .marker-cluster-spider-leg {
     display: none !important;
 }
