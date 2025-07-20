@@ -1,3 +1,7 @@
+//  Ville de Montréal. (2025). Événements publics [Ensemble de données]. Données ouvertes de la Ville de Montréal.
+// https://donnees.montreal.ca/dataset/evenements-publics  Vil le de Montréal. (2025). Événements publics [Ensemble de données]. Données ouvertes de la Ville de Montréal.
+// https://donnees.montreal.ca/dataset/evenements-publics /// /
+
 // This module handles fetching data from the API.
 
 const RESOURCE_ID = '6decf611-6f11-4f34-bb36-324d804c9bad';
