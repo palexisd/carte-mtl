@@ -187,7 +187,7 @@ function createPopupContent(record) {
 
   // "Get Directions" link
   if (record.lat && record.long) {
-    content += `<br><a href="https://www.google.com/maps?daddr=45.5306,-73.5460" target="_blank">Itinéraire</a>`;
+    content += `<br><a href="https://www.google.com/maps/dir/?api=1&destination=${record.lat},${record.long}" target="_blank">Itinéraire</a>`;
   }
 
   if (record.url_fiche)
@@ -197,23 +197,27 @@ function createPopupContent(record) {
   return content;
 }
 
-// --- New Functions ---
-
+/**
+ * Pans to the user's current location and displays a custom marker.
+ */
 export function panToUserLocation() {
   navigator.geolocation.getCurrentPosition(
     (position) => {
       const { latitude, longitude } = position.coords;
       const latLng = [latitude, longitude];
 
+      // Use a DivIcon for custom styling
+      const userIcon = L.divIcon({
+        className: 'user-location-marker',
+        html: '<div class="pulse"></div>',
+        iconSize: [20, 20],
+        iconAnchor: [10, 10],
+      });
+
       if (userLocationMarker) {
         userLocationMarker.setLatLng(latLng);
       } else {
-        userLocationMarker = L.circleMarker(latLng, {
-          radius: 8,
-          color: '#007aff',
-          fillColor: '#fff',
-          fillOpacity: 1,
-        }).addTo(map);
+        userLocationMarker = L.marker(latLng, { icon: userIcon }).addTo(map);
       }
       map.flyTo(latLng, 14);
     },
@@ -223,13 +227,19 @@ export function panToUserLocation() {
   );
 }
 
+/**
+ * Finds a marker by its event ID, pans to it, and opens its popup.
+ * @param {number} eventId The unique ID of the event record.
+ */
 export function panAndOpenPopup(eventId) {
   if (markerMap.has(eventId)) {
     const marker = markerMap.get(eventId);
     const openPopup = () => {
       marker.openPopup();
       clearAllHighlights();
-      marker._icon.classList.add('marker-highlight');
+      if (marker._icon) {
+        marker._icon.classList.add('marker-highlight');
+      }
     };
 
     if (marker.__parent) { // If marker is in a cluster
@@ -240,6 +250,10 @@ export function panAndOpenPopup(eventId) {
   }
 }
 
+/**
+ * Adds a highlight class to a specific marker.
+ * @param {number} eventId The ID of the event marker to highlight.
+ */
 export function highlightMarker(eventId) {
     clearAllHighlights();
     if (markerMap.has(eventId)) {
@@ -250,6 +264,9 @@ export function highlightMarker(eventId) {
     }
 }
 
+/**
+ * Removes the highlight class from all markers.
+ */
 export function clearAllHighlights() {
     markerMap.forEach(marker => {
         if(marker._icon) {

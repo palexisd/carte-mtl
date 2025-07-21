@@ -15,6 +15,7 @@ import {
   updateFilterIndicator,
   setFilterControlsFromState,
   createExtraControls,
+  createAboutModal, // Import the new function
 } from './ui.js';
 
 // --- Global State ---
@@ -187,6 +188,7 @@ async function main() {
     setFilterControlsFromState(currentFilters);
     createMapControls(resetAllFilters);
     createExtraControls(panToUserLocation);
+    createAboutModal(); // Initialize the about modal
     applyFiltersAndRedraw();
 
     // Handle permalink event after initial draw

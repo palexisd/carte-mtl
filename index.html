@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Carte de données de Montréal</title>
 
-    <link rel="icon" type="image/png" href="img/mtl.png">
+    <link rel="icon" type="image/png" href="img/mtl-small.png">
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
@@ -14,15 +14,32 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="filter-container" class="hidden">
-        </div>
+    <!-- Filter Panel -->
+    <div id="filter-container" class="hidden"></div>
 
+    <!-- Map Container -->
     <div id="map">
         <div id="no-results-message" class="map-message hidden">
             <p>Aucun événement ne correspond à vos critères.</p>
         </div>
         <div id="api-error-message" class="map-message hidden">
             <p>Impossible de charger les données pour le moment. Veuillez réessayer plus tard.</p>
+        </div>
+    </div>
+
+    <!-- About Button -->
+    <button id="about-button" class="map-control-button" title="À propos de cette carte">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="currentColor"><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-144c-17.7 0-32-14.3-32-32s14.3-32 32-32s32 14.3 32 32s-14.3 32-32 32z"/></svg>
+    </button>
+
+    <!-- About Modal -->
+    <div id="about-modal" class="modal-container hidden">
+        <div class="modal-content">
+            <button id="close-modal-button" class="close-button">&times;</button>
+            <h2>À propos de la Carte des Événements de Montréal</h2>
+            <p>Cette carte interactive a été conçue pour vous aider à découvrir les événements culturels, sportifs et communautaires qui se déroulent à Montréal. Toutes les informations sont tirées directement du portail des <a href="https://donnees.montreal.ca/" target="_blank">données ouvertes de la Ville de Montréal</a>.</p>
+            <p>Utilisez les filtres pour affiner votre recherche par date, arrondissement, type d'événement, et plus encore. Cliquez sur un marqueur pour obtenir tous les détails sur un événement, y compris les descriptions, les horaires et les liens pertinents.</p>
+            <p>Ce projet est open source. Vous pouvez consulter le code source sur <a href="https://github.com/palexisd/carte-mtl" target="_blank">GitHub</a>.</p>
         </div>
     </div>
 
