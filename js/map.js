@@ -198,34 +198,63 @@ function createPopupContent(record) {
 }
 
 /**
- * Pans to the user's current location and displays a custom marker.
+ * Pans to the user's current location with improved error handling.
  */
 export function panToUserLocation() {
-  navigator.geolocation.getCurrentPosition(
-    (position) => {
-      const { latitude, longitude } = position.coords;
-      const latLng = [latitude, longitude];
+  if (!navigator.geolocation) {
+    alert("La géolocalisation n'est pas supportée par votre navigateur.");
+    return;
+  }
 
-      // Use a DivIcon for custom styling
-      const userIcon = L.divIcon({
-        className: 'user-location-marker',
-        html: '<div class="pulse"></div>',
-        iconSize: [20, 20],
-        iconAnchor: [10, 10],
-      });
+  const options = {
+    enableHighAccuracy: true,
+    timeout: 10000,
+    maximumAge: 0,
+  };
 
-      if (userLocationMarker) {
-        userLocationMarker.setLatLng(latLng);
-      } else {
-        userLocationMarker = L.marker(latLng, { icon: userIcon }).addTo(map);
-      }
-      map.flyTo(latLng, 14);
-    },
-    () => {
-      alert("Impossible d'obtenir votre position.");
+  const success = (position) => {
+    const { latitude, longitude } = position.coords;
+    const latLng = [latitude, longitude];
+
+    const userIcon = L.divIcon({
+      className: 'user-location-marker',
+      html: '<div class="pulse"></div>',
+      iconSize: [20, 20],
+      iconAnchor: [10, 10],
+    });
+
+    if (userLocationMarker) {
+      userLocationMarker.setLatLng(latLng);
+    } else {
+      userLocationMarker = L.marker(latLng, { icon: userIcon }).addTo(map);
     }
-  );
+    map.flyTo(latLng, 14);
+  };
+
+  const error = (err) => {
+    let message = "Impossible d'obtenir votre position.\n\n";
+    switch (err.code) {
+      case err.PERMISSION_DENIED:
+        message += "Vous avez refusé la demande de géolocalisation. Veuillez l'activer dans les réglages de votre navigateur et de votre téléphone.";
+        break;
+      case err.POSITION_UNAVAILABLE:
+        message += "L'information de localisation est actuellement indisponible.";
+        break;
+      case err.TIMEOUT:
+        message += "La demande de géolocalisation a expiré.";
+        break;
+      default:
+        message += "Une erreur inconnue est survenue.";
+        break;
+    }
+    // Note: Using alert() for simplicity. For a better UX, 
+    // you could replace this with a custom modal dialog.
+    alert(message);
+  };
+
+  navigator.geolocation.getCurrentPosition(success, error, options);
 }
+
 
 /**
  * Finds a marker by its event ID, pans to it, and opens its popup.
