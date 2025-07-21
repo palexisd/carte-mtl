@@ -15,7 +15,7 @@ import {
   updateFilterIndicator,
   setFilterControlsFromState,
   createExtraControls,
-  createAboutModal, // Import the new function
+  createAboutModal,
 } from './ui.js';
 
 // --- Global State ---
@@ -62,17 +62,29 @@ function resetAllFilters() {
   applyFiltersAndRedraw();
 }
 
+/**
+ * Filters the master list of records based on the current filter state.
+ * @returns {Array} A new array containing only the records that match the filters.
+ */
 function filterRecords() {
   const searchTerm = currentFilters.search.toLowerCase();
   const now = new Date();
+  // Set time to 00:00:00 to compare dates only, preventing timezone issues
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
   return allRecords.filter((record) => {
-    const recordEndDate = new Date(record.date_fin);
-    if (recordEndDate < today) {
-      return false;
+    // --- Date Sanity Check (FIXED) ---
+    // Only filter out past events if they have a valid end date.
+    // This prevents events without an end date from being hidden.
+    if (record.date_fin) {
+        const recordEndDate = new Date(record.date_fin);
+        // Check if the parsed date is valid AND if it's in the past.
+        if (!isNaN(recordEndDate.getTime()) && recordEndDate < today) {
+            return false;
+        }
     }
 
+    // --- Filter Logic ---
     const boroughMatch =
       currentFilters.arrondissement === 'all' ||
       record.arrondissement === currentFilters.arrondissement;
@@ -107,8 +119,16 @@ function filterRecords() {
 function checkDateFilter(record) {
   const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  
+  // Return true if date filter is not set, or if dates are invalid
+  if (!record.date_debut || !record.date_fin) return true;
+
   const recordStartDate = new Date(record.date_debut);
   const recordEndDate = new Date(record.date_fin);
+
+  // Check for invalid date parsing
+  if (isNaN(recordStartDate.getTime()) || isNaN(recordEndDate.getTime())) return true;
+
 
   switch (currentFilters.date) {
     case 'today':
@@ -175,6 +195,13 @@ async function main() {
         clearAllHighlights();
     });
 
+    // Add listener to close filter menu on map click
+    map.on('click', () => {
+        if (ui.filterContainer && !ui.filterContainer.classList.contains('hidden')) {
+            ui.filterContainer.classList.add('hidden');
+        }
+    });
+
   try {
     allRecords = await fetchAllRecords();
 
@@ -188,7 +215,7 @@ async function main() {
     setFilterControlsFromState(currentFilters);
     createMapControls(resetAllFilters);
     createExtraControls(panToUserLocation);
-    createAboutModal(); // Initialize the about modal
+    createAboutModal();
     applyFiltersAndRedraw();
 
     // Handle permalink event after initial draw

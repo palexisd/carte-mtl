@@ -31,11 +31,19 @@ body {
     display: none;
 }
 
+/* --- Controls Container --- */
+#map-controls-container {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1001;
+    width: 108px; /* Width to hold two buttons side-by-side */
+    height: 162px; /* Height for three rows of buttons */
+}
 
 /* --- Map Control Buttons --- */
 .map-control-button {
-    position: absolute;
-    z-index: 1001;
+    position: absolute; /* Each button is positioned within the container */
     width: 44px;
     height: 44px;
     background: rgba(255, 255, 255, 0.7);
@@ -54,10 +62,11 @@ body {
     transform: scale(1.1);
 }
 
-#filter-toggle { top: 20px; right: 20px; }
-#reset-button-map { top: 20px; right: 74px; }
-#geolocation-button { bottom: 20px; left: 20px; }
-#about-button { bottom: 20px; right: 20px; }
+/* --- Individual Button Positions --- */
+#about-button { top: 0; right: 0; }
+#geolocation-button { top: 54px; right: 0; }
+#filter-toggle { top: 108px; right: 0; }
+#reset-button-map { top: 108px; right: 54px; } /* Positioned to the left of the filter toggle */
 
 
 #reset-button-map.hidden {
@@ -84,7 +93,7 @@ body {
 /* --- Filter Controls --- */
 #filter-container {
     position: absolute;
-    top: 80px;
+    bottom: 192px; /* Positioned above the controls container */
     right: 20px;
     z-index: 1000;
     background: rgba(255, 255, 255, 0.7);
@@ -98,13 +107,13 @@ body {
     flex-direction: column;
     gap: 15px;
     transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
-    transform-origin: top right;
+    transform-origin: bottom right;
 }
 
 #filter-container.hidden {
     opacity: 0;
     visibility: hidden;
-    transform: scale(0.95) translateY(-10px);
+    transform: scale(0.95) translateY(10px);
 }
 
 .filter-control {
@@ -168,13 +177,9 @@ body {
         top: 20px;
         right: 20px;
         left: 20px;
+        bottom: auto; /* Reset bottom for mobile */
         max-height: calc(100% - 100px);
         overflow-y: auto;
-    }
-    
-    #filter-toggle, #reset-button-map {
-        top: auto;
-        bottom: 20px;
     }
 
     #filter-container.hidden {
@@ -190,28 +195,35 @@ body {
 
 /* --- Marker & Popup Styles --- */
 .custom-marker-icon .marker-pin {
+    position: absolute;
     width: 30px;
     height: 30px;
-    border-radius: 50% 50% 50% 0;
-    background: #007aff;
-    position: absolute;
-    transform: rotate(-45deg);
     left: 50%;
     top: 50%;
-    margin: -15px 0 0 -15px;
-    border: 1px solid #0056b3;
-    box-shadow: 3px 3px 5px rgba(0,0,0,0.3);
-    transition: transform 0.2s ease-out;
+    margin-left: -15px;
+    margin-top: -30px; /* Position tip at anchor */
+    background: #007aff;
+    border-radius: 50% 50% 50% 0;
+    transform: rotate(-45deg);
+    border: 1px solid white;
+    box-shadow: 2px 2px 4px rgba(0,0,0,0.3);
 }
 
 /* --- Highlighted Marker Animation --- */
 .marker-highlight .marker-pin {
-    animation: bounce 1s infinite;
+    animation: pulse-marker 1.5s infinite;
 }
-@keyframes bounce {
-    0%, 20%, 50%, 80%, 100% { transform: rotate(-45deg) translateY(0); }
-    40% { transform: rotate(-45deg) translateY(-15px); }
-    60% { transform: rotate(-45deg) translateY(-7px); }
+
+@keyframes pulse-marker {
+    0% {
+        transform: rotate(-45deg) scale(1);
+    }
+    50% {
+        transform: rotate(-45deg) scale(1.2);
+    }
+    100% {
+        transform: rotate(-45deg) scale(1);
+    }
 }
 
 .custom-marker-icon .marker-pin::after {
